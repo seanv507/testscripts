@@ -1,0 +1,45 @@
+---
+title: "hierarchy"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r glmnet}
+library(glmnet)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r classes, echo=FALSE}
+probs <- c(.75, .25,  .15,  -.10, .1,  -.05)
+data <- data.frame(c1=c(1,1,0,0), c2=c(0,0,1,1), c3=c(1,0,0,0), c4=c(0,1,0,0), c5=c(0,0,1,0), c6=c(0,0,0,1))
+data['prob'] <- as.matrix(data) %*% probs
+data['num'] <- c(100,100,100,100)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r}
+gen_data <- data[rep.int(seq(nrow(data)), times=data$num),]
+gen_data['hit'] <- runif(nrow(gen_data)) < gen_data['prob']
+# check samples
+# aggregate(hit ~ prob, gen_data, mean)
+```
+
+```{r}
+data_cols <- paste0('c', seq(6))
+mtx <- as.matrix(gen_data[data_cols])
+y <- gen_data$hit
+fit <- glmnet(x=mtx, y=y, family='binomial')
+```
+

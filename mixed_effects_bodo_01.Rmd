@@ -1,0 +1,85 @@
+---
+title: "mixed effects models"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(lme4)
+library(ggplot2)
+
+```
+
+## R Markdown
+
+[source](http://www.bodowinter.com/tutorial/bw_LME_tutorial2.pdf bodo winter tutorial 2)
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r data}
+pitch = c(233,204,242,130,112,142)
+sex = c(rep("female",3),rep("male",3))
+my.df = data.frame(sex,pitch)
+print(my.df)
+xmdl = lm(pitch ~ sex, my.df)
+summary(xmdl)
+```
+```{r}
+age = c(14,23,35,48,52,67)
+pitch = c(252,244,240,233,212,204)
+my.df = data.frame(age,pitch)
+xmdl = lm(pitch ~ age, my.df)
+summary(xmdl)
+
+```
+```{r}
+politeness <- 
+read.csv("http://www.bodowinter.com/tutorial/politeness_data.csv")
+```
+
+```{r}
+summary(politeness)
+```
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r attritude, echo=FALSE}
+ggplot(politeness,aes(y=frequency, x=gender:attitude)) +geom_boxplot()
+
+```
+```{r}
+politeness.model = lmer(frequency ~ attitude +
+  (1|subject) +
+  (1|scenario), data=politeness)
+summary(politeness.model)
+
+```
+
+```{r}
+politeness.model = lmer(frequency ~ attitude +
+gender + (1|subject) +
+(1|scenario), data=politeness)
+summary(politeness.model)
+```
+Note that compared to our earlier model without the fixed effect gender, the
+variation that’s associated with the random effect “subject” dropped considerably.
+This is because the variation that’s due to gender was confounded with the
+variation that’s due to subject
+
+intercept now represents female pitch (informal???)
+attitu
+
+?why is scenario considered random effect rather than fixed effect?
+
+
+```{r}
+politeness.null = lmer(frequency ~ gender +
+(1|subject) + (1|scenario), data=politeness,
+REML=FALSE)
+politeness.null = lmer(frequency ~ attitude + gender + 
+(1|subject) + (1|scenario), data=politeness,
+REML=FALSE)
+anova(politeness.null,politeness.model)
+```
+
